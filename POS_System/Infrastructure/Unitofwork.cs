@@ -19,6 +19,7 @@ namespace POS_System.Infrastructure
         public Unitofwork(POS_SystemDBContext dBContext)
         {
             _dBContext = dBContext;
+            Repositories = new Dictionary<object, object>();
         }
         public async ValueTask DisposeAsync()
         {

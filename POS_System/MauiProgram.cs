@@ -1,28 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommunityToolkit.Maui;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using POS_System.Infrastructure;
 using POS_System.Infrastructure.Contexts;
+using POS_System.Interfaces;
+using System.Diagnostics;
+
 
 namespace POS_System
 {
     public static class MauiProgram
     {
-        public static MauiApp CreateMauiApp()
+        public static  MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("Oswald-Regular.ttf", "Oswald-Regular");
+                    fonts.AddFont("Oswald-Bold.ttf", "Oswald-Bold.ttf");
                 });
             builder.Services.AddDbContext<POS_SystemDBContext>(o => 
             {
-                o.UseSqlite(Path.Combine(FileSystem.AppDataDirectory, "POS.Db"));
+                o.UseSqlite($"Data Source={Path.Combine(FileSystem.AppDataDirectory, "POS.Db")}");
                 //o.EnableSensitiveDataLogging();
                 //o.LogToConsole();
+                Debug.WriteLine($"{Path.Combine(FileSystem.AppDataDirectory, "POS.Db")}");
 
             });
+            builder.Services.AddScoped<IUntiofWork, Unitofwork>();
 
 #if DEBUG
     		builder.Logging.AddDebug();
@@ -33,11 +41,12 @@ namespace POS_System
             using (var scope = app.Services.CreateScope())
             {
                 var provider = scope.ServiceProvider;
-                var dbcontext = provider.GetRequiredService<DbContext>();
+                var dbcontext = provider.GetRequiredService<POS_SystemDBContext>();
                 var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MauiProgram));
                 try
                 {
-                    dbcontext.Database.MigrateAsync().Wait();
+                    dbcontext.Database.EnsureCreated();
+                    SeedData.Seed(dbcontext);
                 }
                 catch (Exception ex)
                 {
