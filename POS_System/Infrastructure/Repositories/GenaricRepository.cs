@@ -28,6 +28,10 @@ namespace POS_System.Infrastructure.Repositories
         {
            await Task.Run(() => _dBContext.Remove(entity));
         }
+        public List<T> GetAll()
+        {
+            return _dBContext.Set<T>().ToList();
+        }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
@@ -37,6 +41,10 @@ namespace POS_System.Infrastructure.Repositories
         public async Task<IEnumerable<T>> GetAllAsyncWithSpec(Specification<T> spec)
         {
           return await SpecificationEvaluator<T>.GetQuery(_dBContext.Set<T>(), spec).ToListAsync();
+        }
+        public  IEnumerable<T> GetAllWithSpec(Specification<T> spec)
+        {
+          return SpecificationEvaluator<T>.GetQuery(_dBContext.Set<T>(), spec).ToList();
         }
 
         public async Task<T> GetAsync(int id)

@@ -12,8 +12,10 @@ namespace POS_System.Interfaces
     {
         Task<T> GetAsync(int id);
         Task<T> GetAsyncWithSpec(Specification<T> spec);
+        List<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> GetAllAsyncWithSpec(Specification<T> spec);
+        IEnumerable<T> GetAllWithSpec(Specification<T> spec);
         Task AddAsync(T entity);
         Task DeleteAsync(T entity);
         void Update(T entity);

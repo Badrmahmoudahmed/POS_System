@@ -12,7 +12,7 @@ namespace POS_System.Infrastructure.SpecificatoinDP
     public class Specification<T> : ISpecification<T> where T : BaseEntity
     {
         public Expression<Func<T, bool>> Cretria { get; set; }
-        public List<Expression<Func<T, object>>> Includes { get; set; }
+        public List<Expression<Func<T, object>>> Includes { get; set; } = new();
 
         public Specification()
         {

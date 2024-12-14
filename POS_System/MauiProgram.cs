@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using POS_System.Infrastructure;
 using POS_System.Infrastructure.Contexts;
 using POS_System.Interfaces;
+using POS_System.ViewModels;
 using System.Diagnostics;
 
 
@@ -31,6 +32,7 @@ namespace POS_System
 
             });
             builder.Services.AddScoped<IUntiofWork, Unitofwork>();
+            builder.Services.AddScoped<HomeViewModel>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

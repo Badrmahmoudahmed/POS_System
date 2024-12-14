@@ -7,29 +7,32 @@
     Shell.FlyoutBehavior="Locked"
     Shell.FlyoutBackgroundColor="WhiteSmoke"
     Shell.FlyoutWidth="60"
+    Shell.NavBarIsVisible="False"
     Title="POS_System">
- 
-    <ShellContent
-        Title="Home"
+
+    <FlyoutItem Title="Home"  Icon="home.png" >
+        <ShellContent
         ContentTemplate="{DataTemplate v:MainPage }"
-        Icon="home.png"
         Route="MainPage" />
-    <ShellContent 
-        Title="Menueitem"
+    </FlyoutItem>
+    <FlyoutItem Icon="menu.png" Title="Menueitem">
+        <ShellContent 
         ContentTemplate="{DataTemplate v:Menueitem}"
-        Icon="menu.png"
         Route="Menueitem"/>
-    <ShellContent
-        Title="Orders"
-        ContentTemplate="{DataTemplate v:Orders}"
-        Icon="grid.png"
+    </FlyoutItem>
+
+    <FlyoutItem Title="Orders" Icon="grid.png">
+        <ShellContent
+        ContentTemplate="{DataTemplate v:Orders}"       
         Route="Orders"/>
+    </FlyoutItem>
+
+
     <Shell.FlyoutFooter>
         <Image Source="phonecall.png"
                WidthRequest="20"
                HeightRequest="20"
                Margin="0,0,0,40"/>
-        
     </Shell.FlyoutFooter>
 
 

@@ -17,7 +17,8 @@ namespace POS_System.Infrastructure.SpecificatoinDP
             if (spec.Cretria is not null)
                 query = query.Where(spec.Cretria);
 
-            query = spec.Includes.Aggregate(query, (curr, expression) => curr.Include(expression));
+            if (query is not null)
+                query = spec.Includes.Aggregate(query, (curr, expression) => curr.Include(expression));
 
             return query;
         }

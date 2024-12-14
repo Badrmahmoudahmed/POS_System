@@ -4,40 +4,77 @@
              x:Class="POS_System.Pages.MainPage">
 
     <ScrollView>
-        <!--<VerticalStackLayout>
-            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" RowSpacing="10">
+        <Grid ColumnDefinitions="3*,*" >
+            <Grid Grid.Column="0" BackgroundColor="Beige" RowSpacing="20" RowDefinitions="auto,auto,*" Padding="0,30,0,0">
+                <CollectionView Grid.Row="0" ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" HorizontalOptions="Center">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5" />
+                    </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                      
+                                <Border  Stroke="Black" BackgroundColor="Beige" StrokeThickness="2" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5,10,5">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                                    
+                                </Border.GestureRecognizers>
+                                        <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout>
+                                        <Image WidthRequest="30" HeightRequest="30" Source="{Binding Icon}"/>
+                                    <Label VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}" >
+                                        <!--<Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsChecked}" Value="true">
+                                                <Setter Property="TextColor" Value="White"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>-->
+                                    </Label>
 
-                <VerticalStackLayout Grid.Column="0" Grid.Row="0">
-                    <Label Text="Enter Product Name"/>
-                    <Entry Text="{Binding Productname}" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="0" Grid.Row="1">
-                    <Label Text="Enter Product Price"/>
-                    <Entry Text="{Binding Productprice}" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" Grid.Row="0">
-                    <Label Text="Enter Product Stock"/>
-                    <Entry Text="{Binding Productstock}" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" Grid.Row="1">
-                    <Label Text="Enter Product Category"/>
-                    <Entry Text="{Binding Productcategory}" />
-                </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                                <Border.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecked}" Value="true" TargetType="Border">
+                                        <Setter Property="BackgroundColor" Value="Wheat" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                            </Border>
+                       
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
 
+                </CollectionView>
+                <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedMenueitem}">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="5" VerticalItemSpacing="5" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Stroke="Black" Background="Beige" StrokeThickness="2" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5,10,5">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"/>
+                                </Border.StrokeShape>
+                                        <VerticalStackLayout HorizontalOptions="Center">
+                                    <Image Source="{Binding Icon}" HeightRequest="150" />
+                                    <Label HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}"/>
+                                    <Label HorizontalTextAlignment="Center" TextColor="Gray" Text="{Binding Description}"/>
+                                    <Label HorizontalTextAlignment="Center" TextColor="Green" Text="{Binding Price}"/>
+                                </VerticalStackLayout>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="true">
+                                        <Setter Property="BackgroundColor" Value="Tomato"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_1"  />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Grid>
-            <Button Text="Add" Command="{Binding AddProductCommand}" />
-            <CollectionView ItemsSource="{Binding Products}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Orientation="Horizontal" Padding="10">
-                            <Label Text="{Binding Name}" FontSize="20" />
-                            <Label Text="{Binding Price}" FontSize="20" />
-                            <Label Text="{Binding Stock}" FontSize="20" />
-                            <Label Text="{Binding Category}" FontSize="20" />
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>-->
+            <Grid Grid.Column="1" BackgroundColor="Wheat">
+                </Grid>
+
+        </Grid>
     </ScrollView>
 </ContentPage>
