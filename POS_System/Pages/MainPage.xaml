@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="POS_System.Pages.MainPage">
+
+    <ScrollView>
+        <!--<VerticalStackLayout>
+            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" RowSpacing="10">
+
+                <VerticalStackLayout Grid.Column="0" Grid.Row="0">
+                    <Label Text="Enter Product Name"/>
+                    <Entry Text="{Binding Productname}" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="0" Grid.Row="1">
+                    <Label Text="Enter Product Price"/>
+                    <Entry Text="{Binding Productprice}" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Grid.Row="0">
+                    <Label Text="Enter Product Stock"/>
+                    <Entry Text="{Binding Productstock}" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Grid.Row="1">
+                    <Label Text="Enter Product Category"/>
+                    <Entry Text="{Binding Productcategory}" />
+                </VerticalStackLayout>
+
+            </Grid>
+            <Button Text="Add" Command="{Binding AddProductCommand}" />
+            <CollectionView ItemsSource="{Binding Products}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal" Padding="10">
+                            <Label Text="{Binding Name}" FontSize="20" />
+                            <Label Text="{Binding Price}" FontSize="20" />
+                            <Label Text="{Binding Stock}" FontSize="20" />
+                            <Label Text="{Binding Category}" FontSize="20" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>-->
+    </ScrollView>
+</ContentPage>

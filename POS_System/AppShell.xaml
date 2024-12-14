@@ -3,13 +3,35 @@
     x:Class="POS_System.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:POS_System"
-    Shell.FlyoutBehavior="Flyout"
+    xmlns:v ="clr-namespace:POS_System.Pages"
+    Shell.FlyoutBehavior="Locked"
+    Shell.FlyoutBackgroundColor="WhiteSmoke"
+    Shell.FlyoutWidth="60"
     Title="POS_System">
-
+ 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate v:MainPage }"
+        Icon="home.png"
         Route="MainPage" />
+    <ShellContent 
+        Title="Menueitem"
+        ContentTemplate="{DataTemplate v:Menueitem}"
+        Icon="menu.png"
+        Route="Menueitem"/>
+    <ShellContent
+        Title="Orders"
+        ContentTemplate="{DataTemplate v:Orders}"
+        Icon="grid.png"
+        Route="Orders"/>
+    <Shell.FlyoutFooter>
+        <Image Source="phonecall.png"
+               WidthRequest="20"
+               HeightRequest="20"
+               Margin="0,0,0,40"/>
+        
+    </Shell.FlyoutFooter>
+
+
 
 </Shell>
