@@ -25,11 +25,19 @@ namespace POS_System.Pages
             }
         }
 
-        private void TapGestureRecognizer_Tapped_1(object sender, TappedEventArgs e)
+        //private void TapGestureRecognizer_Tapped_1(object sender, TappedEventArgs e)
+        //{
+        //    if(sender is Element element && element.BindingContext is MenueitemViewModel menueitem)
+        //    {
+        //        _homeViewModel.SetChecked(menueitem);
+        //    }
+        //}
+
+        private void ImageButton_Clicked(object sender, EventArgs e)
         {
-            if(sender is Element element && element.BindingContext is MenueitemViewModel menueitem)
+            if (sender is Element element && element.BindingContext is MenueitemViewModel menueitem)
             {
-                _homeViewModel.SetChecked(menueitem);
+                _homeViewModel.AddToCart(menueitem);
             }
         }
     }

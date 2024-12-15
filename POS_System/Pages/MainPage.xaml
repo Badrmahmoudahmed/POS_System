@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:POS_System.ViewModels"
              x:Class="POS_System.Pages.MainPage">
 
     <ScrollView>
@@ -10,19 +11,19 @@
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5" />
                     </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
+                    <CollectionView.ItemTemplate>
                         <DataTemplate>
-                      
-                                <Border  Stroke="Black" BackgroundColor="Beige" StrokeThickness="2" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5,10,5">
+
+                            <Border  Stroke="Black" BackgroundColor="Beige" StrokeThickness="2" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5,10,5">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-                                    
+
                                 </Border.GestureRecognizers>
-                                        <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="10"/>
-                                    </Border.StrokeShape>
-                                    <HorizontalStackLayout>
-                                        <Image WidthRequest="30" HeightRequest="30" Source="{Binding Icon}"/>
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"/>
+                                </Border.StrokeShape>
+                                <HorizontalStackLayout>
+                                    <Image WidthRequest="30" HeightRequest="30" Source="{Binding Icon}"/>
                                     <Label VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}" >
                                         <!--<Label.Triggers>
                                             <DataTrigger TargetType="Label" Binding="{Binding IsChecked}" Value="true">
@@ -38,7 +39,7 @@
                                     </DataTrigger>
                                 </Border.Triggers>
                             </Border>
-                       
+
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
 
@@ -53,27 +54,155 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10"/>
                                 </Border.StrokeShape>
-                                        <VerticalStackLayout HorizontalOptions="Center">
-                                    <Image Source="{Binding Icon}" HeightRequest="150" />
-                                    <Label HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}"/>
-                                    <Label HorizontalTextAlignment="Center" TextColor="Gray" Text="{Binding Description}"/>
-                                    <Label HorizontalTextAlignment="Center" TextColor="Green" Text="{Binding Price}"/>
-                                </VerticalStackLayout>
+                                <Grid RowDefinitions="auto,auto,2*,auto" HorizontalOptions="Center" RowSpacing="25" >
+                                    <Image Grid.Row="0" Source="{Binding Icon}" HeightRequest="100" />
+                                    <Label Grid.Row="1" HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}"/>
+                                    <Label Grid.Row="2" HorizontalTextAlignment="Center" TextColor="Gray" Text="{Binding Description}"/>
+                                    <FlexLayout Grid.Row="3" JustifyContent="SpaceBetween">
+                                        <Label VerticalOptions="Center" HorizontalTextAlignment="Center" TextColor="Green" Text="{Binding Price, StringFormat='{0:C}'}"/>
+                                        <ImageButton VerticalOptions="Start" Clicked="ImageButton_Clicked"  Source="buybutton.png" HeightRequest="10" WidthRequest="10"/>
+                                    </FlexLayout>
+                                </Grid>
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="true">
                                         <Setter Property="BackgroundColor" Value="Tomato"/>
                                     </DataTrigger>
                                 </Border.Triggers>
-                                <Border.GestureRecognizers>
+                                <!--<Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped_1"  />
-                                </Border.GestureRecognizers>
+                                </Border.GestureRecognizers>-->
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
-            <Grid Grid.Column="1" BackgroundColor="Wheat">
+            <Grid Grid.Column="1" Padding="10" BackgroundColor="Wheat">
+                <Grid RowDefinitions="auto,auto,auto">
+                    <VerticalStackLayout Grid.Row="0">
+                        <Label Text="Current Order" FontSize="26" HorizontalTextAlignment="Center" TextColor="Maroon" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding Cart}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="3"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Stroke="Gray" 
+                                    StrokeThickness="2" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    Padding="10"
+                                    BackgroundColor="Beige"
+                                    HorizontalOptions="FillAndExpand"
+                                    VerticalOptions="Start">
+
+                                    <!-- Main Grid -->
+                                    <Grid 
+                                        ColumnDefinitions="Auto, *, Auto" 
+                                        ColumnSpacing="5">
+
+                                        <!-- Left Column: Image/Icon -->
+                                        <VerticalStackLayout 
+                                            VerticalOptions="Center" 
+                                            HorizontalOptions="Center" 
+                                            Grid.Column="0">
+                                            <Image 
+                                                Source="{Binding Icon}" 
+                                                HeightRequest="40" 
+                                                WidthRequest="40" 
+                                                Aspect="AspectFit" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Middle Column: Name and Price -->
+                                        <Grid 
+                                            Grid.Column="1" 
+                                            RowDefinitions="Auto, Auto" 
+                                            RowSpacing="10">
+
+                                            <!-- Product Name -->
+                                            <Label 
+                                                Grid.Row="0" 
+                                                Text="{Binding Name}" 
+                                                FontSize="16" 
+                                                FontAttributes="Bold" 
+                                                TextColor="Black" 
+                                                HorizontalTextAlignment="Start" />
+
+                                            <!-- Price and Quantity Controls -->
+                                            <FlexLayout 
+                                                Grid.Row="1" 
+                                                JustifyContent="SpaceAround" 
+                                                AlignItems="Center">
+
+                                                <!-- Price -->
+                                                <Label
+                                                  
+                                                   Text="{Binding Amount, StringFormat='{0:C}'}" 
+                                                   TextColor="Green" 
+                                                   FontSize="14" />
+
+                                                <!-- Quantity Adjuster -->
+                                                <Grid 
+                                                    ColumnDefinitions="Auto, Auto, Auto" 
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center">
+
+                                                    <!-- Decrease Quantity Button -->
+                                                    <ImageButton 
+                                                        Grid.Column="0" 
+                                                        Source="delete.png" 
+                                                        HeightRequest="10" 
+                                                        WidthRequest="10" 
+                                                        BackgroundColor="Transparent" 
+                                                        Aspect="AspectFit"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=DecreaseQuantityCommand}"
+                                                        CommandParameter="{Binding .}"/>
+
+                                                    <!-- Quantity Display -->
+                                                    <Label 
+                                                        Grid.Column="1" 
+                                                        Text="{Binding Quentity}" 
+                                                        FontSize="14"
+                                                        TextColor="Black"
+                                                        FontAttributes="Bold"
+                                                        HorizontalTextAlignment="Center" 
+                                                        VerticalTextAlignment="Center"
+                                                        Margin="5,0" />
+
+                                                    <!-- Increase Quantity Button -->
+                                                    <ImageButton 
+                                                        Grid.Column="2" 
+                                                        Source="add.png" 
+                                                        HeightRequest="10" 
+                                                        WidthRequest="10" 
+                                                        BackgroundColor="Transparent" 
+                                                        Aspect="AspectFit"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=IncreaseQuantityCommand}"
+                                                        CommandParameter="{Binding .}"/>
+                                                </Grid>
+                                            </FlexLayout>
+                                        </Grid>
+
+                                        <!-- Right Column: Delete Button -->
+                                        <ImageButton
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="End"
+                                            Grid.Column="2" 
+                                            Source="trash.png" 
+                                            HeightRequest="10" 
+                                            WidthRequest="10" 
+                                            BackgroundColor="Transparent" 
+                                            Aspect="AspectFit"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=DeleteCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </Grid>
+            </Grid>
 
         </Grid>
     </ScrollView>
