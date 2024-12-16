@@ -15,6 +15,9 @@ namespace POS_System.Pages
             BindingContext = homeViewModel;
             InitializeComponent();
             _homeViewModel = homeViewModel;
+            Application.Current.MainPage.Window.MinimumHeight = 600;
+            Application.Current.MainPage.Window.MinimumWidth = 1300;
+
         }
 
         private  void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
@@ -40,6 +43,7 @@ namespace POS_System.Pages
                 _homeViewModel.AddToCart(menueitem);
             }
         }
+     
     }
 
 }

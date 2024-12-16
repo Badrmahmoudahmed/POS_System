@@ -6,16 +6,17 @@ using POS_System.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace POS_System.ViewModels
 {
-    public partial class HomeViewModel  : ObservableObject
+    public partial class HomeViewModel : ObservableObject
     {
         private readonly IUntiofWork _unitofwork;
-        
+
         [ObservableProperty]
         private List<CategoryViewModel> categories;
         [ObservableProperty]
@@ -26,14 +27,30 @@ namespace POS_System.ViewModels
         private MenueitemViewModel selectedMenueitem;
         [ObservableProperty]
         private ObservableCollection<CartViewModel> cart;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TaxAmount))]
+        [NotifyPropertyChangedFor(nameof(TotalAmount))]
+        private decimal subTotal;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TaxAmount))]
+        [NotifyPropertyChangedFor(nameof(TotalAmount))]
+        private int taxPercentage;
+        public decimal TaxAmount => (SubTotal * TaxPercentage) / 100;
+        public decimal TotalAmount => SubTotal + TaxAmount;
 
         public HomeViewModel(IUntiofWork unitofwork)
         {
             _unitofwork = unitofwork;
             IntilizeMainPage();
+            Cart.CollectionChanged += Cart_CollectionChanged;
         }
 
-        private  void IntilizeMainPage()
+        private void Cart_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            RecalculateSubTotal();
+        }
+
+        private void IntilizeMainPage()
         {
             Categories = (_unitofwork.GetRepository<Category>().GetAll()).Select(C => new CategoryViewModel { Id = C.Id, Name = C.Name, Icon = C.Icon, IsChecked = false }).ToList();
             Categories[0].IsChecked = true;
@@ -44,15 +61,16 @@ namespace POS_System.ViewModels
         private void GetItems(int id)
         {
             var spec = new ItemWithCategorySpec(id);
-            Items = (_unitofwork.GetRepository<Item>().GetAllWithSpec(spec)).Select(i => new MenueitemViewModel() { Id = i.Id,Name = i.Name, Price = i.Price, Description = i.Description, Icon = i.Icon, IsSelected = false, CategoryId = i.CategoryId }).ToList();
+            Items = (_unitofwork.GetRepository<Item>().GetAllWithSpec(spec)).Select(i => new MenueitemViewModel() { Id = i.Id, Name = i.Name, Price = i.Price, Description = i.Description, Icon = i.Icon, IsSelected = false, CategoryId = i.CategoryId }).ToList();
         }
-        public void SetSelected(CategoryViewModel category) 
+        public void SetSelected(CategoryViewModel category)
         {
             if (SelectedCategory.Id == category.Id)
                 return;
 
-            foreach (var item in Categories) {
-            
+            foreach (var item in Categories)
+            {
+
                 item.IsChecked = false;
             }
             category.IsChecked = true;
@@ -65,7 +83,7 @@ namespace POS_System.ViewModels
             if (SelectedMenueitem.Id == item.Id)
                 return;
 
-            foreach(var entity in items)
+            foreach (var entity in items)
             {
                 entity.IsSelected = false;
             }
@@ -86,12 +104,14 @@ namespace POS_System.ViewModels
                     Name = model.Name,
                     Quentity = 1
                 };
-                cart.Add(NewItem);
+                Cart.Add(NewItem);
 
             }
-            else {
+            else
+            {
 
                 cartmodel.Quentity++;
+                RecalculateSubTotal();
             }
 
         }
@@ -100,20 +120,26 @@ namespace POS_System.ViewModels
         {
             var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
             if (curritem is not null)
+            {
                 cartitem.Quentity++;
+                RecalculateSubTotal();
+            }
         }
         [RelayCommand]
         private void DecreaseQuantity(CartViewModel cartitem)
         {
             var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
             if (curritem is not null)
-            { 
-                if(cartitem.Quentity == 1)
+            {
+                if (cartitem.Quentity == 1)
                     Delete(cartitem);
                 else
+                {
                     cartitem.Quentity--;
+                    RecalculateSubTotal();
+                }
 
-                
+
             }
         }
         [RelayCommand]
@@ -122,6 +148,38 @@ namespace POS_System.ViewModels
             var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
             if (curritem is not null)
                 Cart.Remove(cartitem);
+        }
+        private void RecalculateSubTotal()
+        {
+            SubTotal = Cart.Sum(c => c.Amount);
+        }
+        [RelayCommand]
+        private async void SetTax()
+        {
+          if (!Cart.Any()) return;
+          var EnteredTax = await  Shell.Current.DisplayPromptAsync("Tax%", "Enter Tax Percentage");
+            if(!string.IsNullOrEmpty(EnteredTax))
+            {
+               var result = int.TryParse(EnteredTax, out var quantity);
+               if(result)
+                   { TaxPercentage = quantity; }
+               else 
+                await Shell.Current.DisplayAlert("Warning", "Invalid Tax Percentage", "I'am So Sorry");
+
+            }
+          
+
+        }
+        [RelayCommand]
+        private async void RemoveCart()
+        {
+            if (!Cart.Any())
+                return;
+            var result = await Shell.Current.DisplayAlert("Warning", "Are You Sure!", "Confirm", "Cancel");
+            if (!result)
+                return;
+
+            Cart.Clear();
         }
     }
 }

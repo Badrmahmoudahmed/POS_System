@@ -50,20 +50,28 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Stroke="Black" Background="Beige" StrokeThickness="2" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5,10,5">
+                            <Border Stroke="Black" Background="Beige" StrokeThickness="2" VerticalOptions="Center" HorizontalOptions="Center" Padding="10,5">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10"/>
                                 </Border.StrokeShape>
-                                <Grid RowDefinitions="auto,auto,2*,auto" HorizontalOptions="Center" RowSpacing="25" >
-                                    <Image Grid.Row="0" Source="{Binding Icon}" HeightRequest="100" />
-                                    <Label Grid.Row="1" HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}"/>
-                                    <Label Grid.Row="2" HorizontalTextAlignment="Center" TextColor="Gray" Text="{Binding Description}"/>
-                                    <FlexLayout Grid.Row="3" JustifyContent="SpaceBetween">
-                                        <Label VerticalOptions="Center" HorizontalTextAlignment="Center" TextColor="Green" Text="{Binding Price, StringFormat='{0:C}'}"/>
-                                        <ImageButton VerticalOptions="Start" Clicked="ImageButton_Clicked"  Source="buybutton.png" HeightRequest="10" WidthRequest="10"/>
-                                    </FlexLayout>
-                                </Grid>
-                                <Border.Triggers>
+                                <Border.Shadow>
+                                    <Shadow Brush="Maroon" Radius="2"/>
+                                </Border.Shadow>
+                                <Border>
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <Grid Padding="10,0"  BackgroundColor="Wheat" RowDefinitions="auto,auto,2*,auto" HorizontalOptions="Center" RowSpacing="10" >
+                                        <Image Grid.Row="0" Source="{Binding Icon}" HeightRequest="100" />
+                                        <Label Grid.Row="1" HorizontalTextAlignment="Center" TextColor="Black" Text="{Binding Name}"/>
+                                        <Label Grid.Row="2" HorizontalTextAlignment="Center" TextColor="Gray" Text="{Binding Description}"/>
+                                        <FlexLayout Grid.Row="3" JustifyContent="SpaceBetween">
+                                            <Label VerticalOptions="Center" HorizontalTextAlignment="Center" TextColor="Green" Text="{Binding Price, StringFormat='{0:C}'}"/>
+                                            <ImageButton VerticalOptions="Start" Clicked="ImageButton_Clicked"  Source="buybutton.png" HeightRequest="10" WidthRequest="10"/>
+                                        </FlexLayout>
+                                    </Grid>
+                                </Border>
+                                        <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="true">
                                         <Setter Property="BackgroundColor" Value="Tomato"/>
                                     </DataTrigger>
@@ -77,7 +85,7 @@
                 </CollectionView>
             </Grid>
             <Grid Grid.Column="1" Padding="10" BackgroundColor="Wheat">
-                <Grid RowDefinitions="auto,auto,auto">
+                <Grid RowDefinitions="auto,*,auto">
                     <VerticalStackLayout Grid.Row="0">
                         <Label Text="Current Order" FontSize="26" HorizontalTextAlignment="Center" TextColor="Maroon" FontAttributes="Bold" />
                     </VerticalStackLayout>
@@ -94,7 +102,15 @@
                                     Padding="10"
                                     BackgroundColor="Beige"
                                     HorizontalOptions="FillAndExpand"
-                                    VerticalOptions="Start">
+                                    VerticalOptions="Start"
+                                    >
+                                    <Border.Shadow>
+                                        <Shadow
+                                            Brush="Maroon"
+                                            Radius="10"
+                                            Opacity="0.7"
+                                            />
+                                    </Border.Shadow>
 
                                     <!-- Main Grid -->
                                     <Grid 
@@ -201,7 +217,50 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                    <Border 
+                          Grid.Row="2"
+                          Stroke="Gray" 
+                          StrokeThickness="2" 
+                          StrokeShape="RoundRectangle 10" 
+                          Padding="10"
+                          BackgroundColor="Beige"
+                          HorizontalOptions="FillAndExpand"
+                          VerticalOptions="Start"
+                          >
+                        <Border.Shadow>
+                            <Shadow
+                                Brush="Maroon"
+                                Radius="10"
+                                Opacity="0.7"
+                                />
+
+                        </Border.Shadow>
+                                <Grid  RowDefinitions="auto,auto,auto,auto,auto,auto" ColumnDefinitions="2*,3*" RowSpacing="10">
+                            <Label Text="SubTotal :" Grid.Column="0" Grid.Row="0" TextColor="Black" FontSize="14"/>
+                            <HorizontalStackLayout Spacing="10" Grid.Column="0" Grid.Row="1">
+                                <Label Text="Tax" TextColor="Black" FontSize="14"/>
+                                <Label Text="{Binding TaxPercentage, StringFormat='{0}%'}" BackgroundColor="Wheat" TextColor="Black" FontSize="14">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SetTaxCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                            <Border Stroke="Maroon" StrokeDashArray="5,2" StrokeThickness="0.5" Grid.Row="2" Grid.ColumnSpan="2" />
+                            <Label Text="Total :" Grid.Column="0" Grid.Row="3" TextColor="Black" FontSize="14"/>
+                            <Border Stroke="Maroon" StrokeDashArray="5,2" StrokeThickness="0.5" Grid.Row="4" Grid.ColumnSpan="2" />
+                            <Grid ColumnSpacing="5" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" ColumnDefinitions="auto,*,auto,auto">
+                                <Button Command="{Binding RemoveCartCommand}" Text="X" BackgroundColor="Red" Grid.Column="0" FontSize="20" TextColor="White" Padding="10,0" />
+                                <Button Text="Cash Payment" Grid.Column="2" FontSize="12" TextColor="White"  />
+                                <Button Text="Card Payment" Grid.Column="3" FontSize="12" TextColor="White"  />
+                            </Grid>
+                            <Label Text="{Binding SubTotal, StringFormat='{0:C}'}" Grid.Column="1" Grid.Row="0" TextColor="Black" FontSize="14"/>
+                            <Label Text="{Binding TaxAmount}" Grid.Column="1" Grid.Row="1" TextColor="Black" FontSize="14"/>
+                            <Label Text="{Binding TotalAmount}" Grid.Column="1" Grid.Row="3" TextColor="Black" FontSize="14"/>
+
+                        </Grid>
+                    </Border>
                 </Grid>
+
             </Grid>
 
         </Grid>
