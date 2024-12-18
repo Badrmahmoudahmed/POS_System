@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using POS_System.Interfaces;
 using POS_System.Interfaces.ISpecifications;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +28,7 @@ namespace POS_System.ViewModels
         [ObservableProperty]
         private MenueitemViewModel selectedMenueitem;
         [ObservableProperty]
-        private ObservableCollection<CartViewModel> cart;
+        private ObservableCollection<CartItemViewModel> cart;
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TaxAmount))]
         [NotifyPropertyChangedFor(nameof(TotalAmount))]
@@ -56,7 +58,7 @@ namespace POS_System.ViewModels
             Categories[0].IsChecked = true;
             SelectedCategory = Categories[0];
             GetItems(SelectedCategory.Id);
-            Cart = new ObservableCollection<CartViewModel>();
+            Cart = new ObservableCollection<CartItemViewModel>();
         }
         private void GetItems(int id)
         {
@@ -96,7 +98,7 @@ namespace POS_System.ViewModels
 
             if (cartmodel is null)
             {
-                var NewItem = new CartViewModel()
+                var NewItem = new CartItemViewModel()
                 {
                     ItemId = model.Id,
                     Price = model.Price,
@@ -116,7 +118,7 @@ namespace POS_System.ViewModels
 
         }
         [RelayCommand]
-        private void IncreaseQuantity(CartViewModel cartitem)
+        private void IncreaseQuantity(CartItemViewModel cartitem)
         {
             var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
             if (curritem is not null)
@@ -126,7 +128,7 @@ namespace POS_System.ViewModels
             }
         }
         [RelayCommand]
-        private void DecreaseQuantity(CartViewModel cartitem)
+        private void DecreaseQuantity(CartItemViewModel cartitem)
         {
             var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
             if (curritem is not null)
@@ -143,7 +145,7 @@ namespace POS_System.ViewModels
             }
         }
         [RelayCommand]
-        private void Delete(CartViewModel cartitem)
+        private void Delete(CartItemViewModel cartitem)
         {
             var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
             if (curritem is not null)
@@ -180,6 +182,29 @@ namespace POS_System.ViewModels
                 return;
 
             Cart.Clear();
+        }
+        [RelayCommand]
+        private async Task CreateOrdar(string PayMethod)
+        {
+            if (!Cart.Any()) return;
+            var order = new Order()
+            {
+                OrderDate = DateTime.Now,
+                ItemsCount = Cart.Count,
+                OrderPrice = TotalAmount,
+                PaymentMethod = PayMethod,
+                OrderItems = Cart.Select(c => new OrderItem() { ItemId = c.ItemId, Icon = c.Icon, Name = c.Name, Price = c.Price, Quantity = c.Quentity }).ToList()
+            };
+           await _unitofwork.GetRepository<Order>().AddAsync(order);
+           var count =  await _unitofwork.SaveChangesAsync();
+            if (count > 0)
+            {
+                await Shell.Current.DisplayAlert("Success", "Order Added Successfully", "Confirm");
+                Cart.Clear();
+            }
+            else {
+              await Shell.Current.DisplayAlert("Error Message", "Invalid Order", "OK");
+            }
         }
     }
 }

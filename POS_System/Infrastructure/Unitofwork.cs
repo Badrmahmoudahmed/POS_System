@@ -37,9 +37,9 @@ namespace POS_System.Infrastructure
             return Repositories[key] as IGenaricRepository<T>;
         }
 
-        public async Task SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-          await  _dBContext.SaveChangesAsync();
+          return await  _dBContext.SaveChangesAsync();
         }
     }
 }

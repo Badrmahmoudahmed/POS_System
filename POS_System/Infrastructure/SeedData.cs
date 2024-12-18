@@ -70,46 +70,6 @@ namespace POS_System.Infrastructure
 
 
             dBContext.Set<Item>().AddRange(items);
-
-            // Seed Orders
-            var order1 = new Order
-            {
-                Id = 1,
-                OrderDate = DateTime.UtcNow,
-                ItemsCount = 2,
-                OrderPrice = 18.98m,
-                PaymentMethod = "Credit Card"
-            };
-
-            dBContext.Set<Order>().Add(order1);
-
-            // Seed OrderItems
-            var orderItems = new List<OrderItem>();
-
-            // Add order items from the first two categories for the order
-            orderItems.Add(new OrderItem
-            {
-                Id = 1,
-                Name = items[0].Name,
-                Icon = items[0].Icon,
-                Price = items[0].Price,
-                Quantity = 2,
-                Item = items[0],
-
-            });
-
-            orderItems.Add(new OrderItem
-            {
-                Id = 2,
-                Name = items[10].Name,
-                Icon = items[10].Icon,
-                Price = items[10].Price,
-                Quantity = 1,
-                Item = items[10],
-
-            });
-
-            dBContext.Set<OrderItem>().AddRange(orderItems);
             dBContext.SaveChanges();
         }
     }

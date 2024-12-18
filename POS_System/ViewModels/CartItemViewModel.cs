@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace POS_System.ViewModels
 {
-     public partial class  CartViewModel : ObservableObject
+     public partial class  CartItemViewModel : ObservableObject
     {
         public int ItemId { get; set; }
         public string Name { get; set; }

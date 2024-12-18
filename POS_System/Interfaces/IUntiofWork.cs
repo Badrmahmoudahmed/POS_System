@@ -11,6 +11,6 @@ namespace POS_System.Interfaces
     {
         IGenaricRepository<T> GetRepository<T>() where T : BaseEntity;
 
-        Task SaveChangesAsync();
+        Task<int> SaveChangesAsync();
     }
 }

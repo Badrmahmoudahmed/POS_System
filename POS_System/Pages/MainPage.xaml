@@ -250,8 +250,8 @@
                             <Border Stroke="Maroon" StrokeDashArray="5,2" StrokeThickness="0.5" Grid.Row="4" Grid.ColumnSpan="2" />
                             <Grid ColumnSpacing="5" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" ColumnDefinitions="auto,*,auto,auto">
                                 <Button Command="{Binding RemoveCartCommand}" Text="X" BackgroundColor="Red" Grid.Column="0" FontSize="20" TextColor="White" Padding="10,0" />
-                                <Button Text="Cash Payment" Grid.Column="2" FontSize="12" TextColor="White"  />
-                                <Button Text="Card Payment" Grid.Column="3" FontSize="12" TextColor="White"  />
+                                <Button Text="Cash Payment" Grid.Column="2" FontSize="12" TextColor="White" Command="{Binding CreateOrdarCommand}" CommandParameter="Cash Payment"  />
+                                <Button Text="Card Payment" Grid.Column="3" FontSize="12" TextColor="White" Command="{Binding CreateOrdarCommand}" CommandParameter="Card Payment"  />
                             </Grid>
                             <Label Text="{Binding SubTotal, StringFormat='{0:C}'}" Grid.Column="1" Grid.Row="0" TextColor="Black" FontSize="14"/>
                             <Label Text="{Binding TaxAmount}" Grid.Column="1" Grid.Row="1" TextColor="Black" FontSize="14"/>

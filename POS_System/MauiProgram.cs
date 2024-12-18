@@ -47,7 +47,7 @@ namespace POS_System
                 var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MauiProgram));
                 try
                 {
-                    dbcontext.Database.EnsureCreated();
+                    var RESULT = dbcontext.Database.EnsureCreated();
                     SeedData.Seed(dbcontext);
                 }
                 catch (Exception ex)
