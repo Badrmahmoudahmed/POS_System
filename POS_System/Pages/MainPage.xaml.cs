@@ -15,8 +15,8 @@ namespace POS_System.Pages
             BindingContext = homeViewModel;
             InitializeComponent();
             _homeViewModel = homeViewModel;
-            Application.Current.MainPage.Window.MinimumHeight = 600;
-            Application.Current.MainPage.Window.MinimumWidth = 1300;
+            Application.Current.MainPage.Window.MinimumHeight = 680;
+            Application.Current.MainPage.Window.MinimumWidth = 1200;
 
         }
 
