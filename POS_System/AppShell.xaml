@@ -15,16 +15,18 @@
         ContentTemplate="{DataTemplate v:MainPage }"
         Route="MainPage" />
     </FlyoutItem>
-    <FlyoutItem Icon="menu.png" Title="Menueitem">
-        <ShellContent 
-        ContentTemplate="{DataTemplate v:Menueitem}"
-        Route="Menueitem"/>
-    </FlyoutItem>
+ 
 
     <FlyoutItem Title="Orders" Icon="grid.png">
         <ShellContent
         ContentTemplate="{DataTemplate v:Orders}"       
         Route="Orders"/>
+    </FlyoutItem>
+
+    <FlyoutItem Icon="menu.png" Title="Menueitem">
+        <ShellContent 
+       ContentTemplate="{DataTemplate v:Menueitem}"
+       Route="Menueitem"/>
     </FlyoutItem>
 
 

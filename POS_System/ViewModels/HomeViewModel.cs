@@ -4,46 +4,51 @@ using CommunityToolkit.Mvvm.Input;
 using POS_System.Interfaces;
 using POS_System.Interfaces.ISpecifications;
 using POS_System.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace POS_System.ViewModels
 {
     public partial class HomeViewModel : ObservableObject
     {
         private readonly IUntiofWork _unitofwork;
+        private readonly OrderViewModel _orderViewModel;
 
         [ObservableProperty]
         private List<CategoryViewModel> categories;
+
         [ObservableProperty]
         private CategoryViewModel selectedCategory;
+
         [ObservableProperty]
         private List<MenueitemViewModel> items;
+
         [ObservableProperty]
-        private MenueitemViewModel selectedMenueitem;
+        private MenueitemViewModel selectedMenuItem;
+
         [ObservableProperty]
         private ObservableCollection<CartItemViewModel> cart;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TaxAmount))]
         [NotifyPropertyChangedFor(nameof(TotalAmount))]
         private decimal subTotal;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TaxAmount))]
         [NotifyPropertyChangedFor(nameof(TotalAmount))]
         private int taxPercentage;
+
         public decimal TaxAmount => (SubTotal * TaxPercentage) / 100;
         public decimal TotalAmount => SubTotal + TaxAmount;
 
-        public HomeViewModel(IUntiofWork unitofwork)
+        public HomeViewModel(IUntiofWork unitOfWork, OrderViewModel orderViewModel)
         {
-            _unitofwork = unitofwork;
-            IntilizeMainPage();
+            _unitofwork = unitOfWork;
+            _orderViewModel = orderViewModel;
+
+            InitializeMainPage();
             Cart.CollectionChanged += Cart_CollectionChanged;
         }
 
@@ -52,159 +57,178 @@ namespace POS_System.ViewModels
             RecalculateSubTotal();
         }
 
-        private void IntilizeMainPage()
+        private void InitializeMainPage()
         {
-            Categories = (_unitofwork.GetRepository<Category>().GetAll()).Select(C => new CategoryViewModel { Id = C.Id, Name = C.Name, Icon = C.Icon, IsChecked = false }).ToList();
-            Categories[0].IsChecked = true;
-            SelectedCategory = Categories[0];
-            GetItems(SelectedCategory.Id);
+            Categories = _unitofwork.GetRepository<Category>().GetAll()
+                .Select(c => new CategoryViewModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Icon = c.Icon,
+                    IsChecked = false
+                }).ToList();
+
+            if (Categories.Any())
+            {
+                Categories[0].IsChecked = true;
+                SelectedCategory = Categories[0];
+                GetItems(SelectedCategory.Id);
+            }
+
             Cart = new ObservableCollection<CartItemViewModel>();
         }
-        private void GetItems(int id)
+
+        private void GetItems(int categoryId)
         {
-            var spec = new ItemWithCategorySpec(id);
-            Items = (_unitofwork.GetRepository<Item>().GetAllWithSpec(spec)).Select(i => new MenueitemViewModel() { Id = i.Id, Name = i.Name, Price = i.Price, Description = i.Description, Icon = i.Icon, IsSelected = false, CategoryId = i.CategoryId }).ToList();
+            var spec = new ItemWithCategorySpec(categoryId);
+            Items = _unitofwork.GetRepository<Item>().GetAllWithSpec(spec)
+                .Select(i => new MenueitemViewModel
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Price = i.Price,
+                    Description = i.Description,
+                    Icon = i.Icon,
+                    IsSelected = false,
+                    CategoryId = i.CategoryId
+                }).ToList();
         }
+
         public void SetSelected(CategoryViewModel category)
         {
-            if (SelectedCategory.Id == category.Id)
+            if (SelectedCategory?.Id == category.Id)
                 return;
 
-            foreach (var item in Categories)
-            {
-
-                item.IsChecked = false;
-            }
+            Categories.ForEach(c => c.IsChecked = false);
             category.IsChecked = true;
             SelectedCategory = category;
-            GetItems(SelectedCategory.Id);
 
+            GetItems(SelectedCategory.Id);
         }
-        public void SetChecked(MenueitemViewModel item)
+
+        public void SetChecked(MenueitemViewModel menuItem)
         {
-            if (SelectedMenueitem.Id == item.Id)
+            if (selectedMenuItem?.Id == menuItem.Id)
                 return;
 
-            foreach (var entity in items)
-            {
-                entity.IsSelected = false;
-            }
-            item.IsSelected = true;
-            SelectedMenueitem = item;
+            Items.ForEach(i => i.IsSelected = false);
+            menuItem.IsSelected = true;
+            selectedMenuItem = menuItem;
         }
+
         public void AddToCart(MenueitemViewModel model)
         {
-            var cartmodel = Cart.FirstOrDefault(c => c.ItemId == model.Id);
-
-            if (cartmodel is null)
+            var existingCartItem = Cart.FirstOrDefault(c => c.ItemId == model.Id);
+            if (existingCartItem == null)
             {
-                var NewItem = new CartItemViewModel()
+                Cart.Add(new CartItemViewModel
                 {
                     ItemId = model.Id,
                     Price = model.Price,
                     Icon = model.Icon,
                     Name = model.Name,
                     Quentity = 1
-                };
-                Cart.Add(NewItem);
-
+                });
             }
             else
             {
-
-                cartmodel.Quentity++;
-                RecalculateSubTotal();
-            }
-
-        }
-        [RelayCommand]
-        private void IncreaseQuantity(CartItemViewModel cartitem)
-        {
-            var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
-            if (curritem is not null)
-            {
-                cartitem.Quentity++;
+                existingCartItem.Quentity++;
                 RecalculateSubTotal();
             }
         }
+
         [RelayCommand]
-        private void DecreaseQuantity(CartItemViewModel cartitem)
+        private void IncreaseQuantity(CartItemViewModel cartItem)
         {
-            var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
-            if (curritem is not null)
+            cartItem.Quentity++;
+            RecalculateSubTotal();
+        }
+
+        [RelayCommand]
+        private void DecreaseQuantity(CartItemViewModel cartItem)
+        {
+            if (cartItem.Quentity == 1)
             {
-                if (cartitem.Quentity == 1)
-                    Delete(cartitem);
-                else
-                {
-                    cartitem.Quentity--;
-                    RecalculateSubTotal();
-                }
-
-
+                Delete(cartItem);
+            }
+            else
+            {
+                cartItem.Quentity--;
+                RecalculateSubTotal();
             }
         }
+
         [RelayCommand]
-        private void Delete(CartItemViewModel cartitem)
+        private void Delete(CartItemViewModel cartItem)
         {
-            var curritem = Cart.FirstOrDefault(c => c.ItemId == cartitem.ItemId);
-            if (curritem is not null)
-                Cart.Remove(cartitem);
+            Cart.Remove(cartItem);
         }
+
         private void RecalculateSubTotal()
         {
             SubTotal = Cart.Sum(c => c.Amount);
         }
-        [RelayCommand]
-        private async void SetTax()
-        {
-          if (!Cart.Any()) return;
-          var EnteredTax = await  Shell.Current.DisplayPromptAsync("Tax%", "Enter Tax Percentage");
-            if(!string.IsNullOrEmpty(EnteredTax))
-            {
-               var result = int.TryParse(EnteredTax, out var quantity);
-               if(result)
-                   { TaxPercentage = quantity; }
-               else 
-                await Shell.Current.DisplayAlert("Warning", "Invalid Tax Percentage", "I'am So Sorry");
 
-            }
-          
-
-        }
         [RelayCommand]
-        private async void RemoveCart()
-        {
-            if (!Cart.Any())
-                return;
-            var result = await Shell.Current.DisplayAlert("Warning", "Are You Sure!", "Confirm", "Cancel");
-            if (!result)
-                return;
-
-            Cart.Clear();
-        }
-        [RelayCommand]
-        private async Task CreateOrdar(string PayMethod)
+        private async Task SetTaxAsync()
         {
             if (!Cart.Any()) return;
-            var order = new Order()
+
+            var enteredTax = await Shell.Current.DisplayPromptAsync("Tax%", "Enter Tax Percentage");
+            if (int.TryParse(enteredTax, out var tax))
+            {
+                TaxPercentage = tax;
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Warning", "Invalid Tax Percentage", "OK");
+            }
+        }
+
+        [RelayCommand]
+        private async Task RemoveCartAsync()
+        {
+            if (!Cart.Any()) return;
+
+            var confirm = await Shell.Current.DisplayAlert("Warning", "Are you sure?", "Confirm", "Cancel");
+            if (confirm) Cart.Clear();
+        }
+
+        [RelayCommand]
+        private async Task CreateOrderAsync(string paymentMethod)
+        {
+            if (!Cart.Any()) return;
+
+            var order = new Order
             {
                 OrderDate = DateTime.Now,
                 ItemsCount = Cart.Count,
                 OrderPrice = TotalAmount,
-                PaymentMethod = PayMethod,
-                OrderItems = Cart.Select(c => new OrderItem() { ItemId = c.ItemId, Icon = c.Icon, Name = c.Name, Price = c.Price, Quantity = c.Quentity }).ToList()
+                PaymentMethod = paymentMethod,
+                OrderItems = Cart.Select(c => new OrderItem
+                {
+                    ItemId = c.ItemId,
+                    Icon = c.Icon,
+                    Name = c.Name,
+                    Price = c.Price,
+                    Quantity = c.Quentity
+                }).ToList()
             };
-           await _unitofwork.GetRepository<Order>().AddAsync(order);
-           var count =  await _unitofwork.SaveChangesAsync();
-            if (count > 0)
+
+            await _unitofwork.GetRepository<Order>().AddAsync(order);
+            var saveResult = await _unitofwork.SaveChangesAsync();
+
+            if (saveResult > 0)
             {
-                await Shell.Current.DisplayAlert("Success", "Order Added Successfully", "Confirm");
+                await Shell.Current.DisplayAlert("Success", "Order added successfully", "OK");
+                _orderViewModel.IntilizeModel();
                 Cart.Clear();
             }
-            else {
-              await Shell.Current.DisplayAlert("Error Message", "Invalid Order", "OK");
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Failed to add order. Please try again.", "OK");
             }
         }
+
     }
 }

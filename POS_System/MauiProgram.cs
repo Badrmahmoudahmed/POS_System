@@ -33,6 +33,7 @@ namespace POS_System
             });
             builder.Services.AddScoped<IUntiofWork, Unitofwork>();
             builder.Services.AddScoped<HomeViewModel>();
+            builder.Services.AddScoped<OrderViewModel>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

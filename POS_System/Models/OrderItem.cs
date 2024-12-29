@@ -1,4 +1,7 @@
-﻿namespace POS_System.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+
+namespace POS_System.Models
 {
     public class OrderItem : BaseEntity
     {
@@ -9,6 +12,9 @@
         public int OrderId { get; set; }
         public int ItemId { get; set; }
         public Item Item { get; set; }
+
+        [NotMapped]
+        public decimal Amount => Quantity * Price;
 
     }
 }

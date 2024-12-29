@@ -11,6 +11,7 @@ namespace POS_System.Interfaces
     public interface IGenaricRepository<T> where T : BaseEntity
     {
         Task<T> GetAsync(int id);
+        T GetWithSpec(Specification<T> spec);
         Task<T> GetAsyncWithSpec(Specification<T> spec);
         List<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync();

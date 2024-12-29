@@ -51,6 +51,10 @@ namespace POS_System.Infrastructure.Repositories
         {
           return await _dBContext.Set<T>().FindAsync(id);
         }
+        public T GetWithSpec(Specification<T> spec)
+        {
+            return SpecificationEvaluator<T>.GetQuery(_dBContext.Set<T>(), spec).FirstOrDefault();
+        }
 
         public async Task<T> GetAsyncWithSpec(Specification<T> spec)
         {
