@@ -15,6 +15,7 @@ namespace POS_System.Models
 
         [NotMapped]
         public decimal Amount => Quantity * Price;
+        
 
     }
 }

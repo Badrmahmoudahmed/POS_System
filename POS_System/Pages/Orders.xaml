@@ -59,15 +59,20 @@
                         <CollectionView Grid.Row="1" ItemsSource="{Binding Orders}" Margin="0,5,0,0">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid RowDefinitions="Auto,1" ColumnDefinitions="*,*,*,*,*,*" Padding="5,2">
+                                    <Grid RowDefinitions="Auto,1"  ColumnDefinitions="*,*,*,*,*,*" Padding="5,2">
+                                        <Grid.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" TargetType="Grid" Value="true">
+                                                <Setter Property="BackgroundColor" Value="Wheat"/>
+                                            </DataTrigger>
+                                        </Grid.Triggers>
                                         <Label Grid.Column="0" Style="{StaticResource DataStyle}" Text="{Binding Id, StringFormat='# {0}'}"/>
                                         <Label Grid.Column="1" Style="{StaticResource DataStyle}" Text="{Binding OrderDate, StringFormat='{0:MM/dd/yyyy}'}"/>
                                         <Label Grid.Column="2" Style="{StaticResource DataStyle}" Text="{Binding OrderPrice, StringFormat='${0:F2}'}"/>
                                         <Label Grid.Column="3" Style="{StaticResource DataStyle}" Text="{Binding PaymentMethod}"/>
                                         <Label Grid.Column="4" Style="{StaticResource DataStyle}" Text="{Binding ItemsCount}"/>
                                         <Button Grid.Column="5" Style="{StaticResource ButtonStyle}" Text="View Items" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderViewModel}},Path=GetItemsCommand}" CommandParameter="{Binding Id}"/>
-
-                                        <!-- Row Divider -->
+                                        
+                                                <!-- Row Divider -->
                                         <BoxView Grid.Row="1" Grid.ColumnSpan="6" HeightRequest="1" BackgroundColor="Gray"/>
                                     </Grid>
                                 </DataTemplate>
@@ -94,9 +99,15 @@
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
                     </CollectionView.ItemsLayout>
-
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                    <CollectionView.EmptyView>
+                        <Grid RowDefinitions="auto,auto">
+                            <Image Grid.Row="0" HeightRequest="150" Source="emptyfolder.png" />
+                            <Label Grid.Row="1" Style="{StaticResource HeaderStyle}" TextColor="Maroon" Text="There is No Selected Order"/>
+                        </Grid>
+                    </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                        
+                            <DataTemplate>
                             <!-- Border for each item -->
                             <Border
             Style="{StaticResource BorderStyle}" 
@@ -122,10 +133,28 @@
                         FontSize="16" 
                         FontAttributes="Bold" 
                         TextColor="Black" />
-                                        <Label 
-                        Text="{Binding Amount, StringFormat='{0:C}'}" 
-                        FontSize="14" 
-                        TextColor="Green" />
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label 
+                                                Text="{Binding Price, StringFormat='{0:C}'}" 
+                                                FontSize="14" 
+                                                TextColor="Green" />
+                                            <Label 
+                                                Text="X" 
+                                                FontSize="14" 
+                                                TextColor="Black" />
+                                            <Label 
+                                                Text="{Binding Quantity}" 
+                                                FontSize="14" 
+                                                TextColor="Green" /> 
+                                            <Label 
+                                                Text="=" 
+                                                FontSize="Body" 
+                                                TextColor="Black" />
+                                            <Label 
+                                                Text="{Binding Amount, StringFormat='{0:C}'}" 
+                                                FontSize="14" 
+                                                TextColor="Green" />
+                                        </HorizontalStackLayout>
                                     </VerticalStackLayout>
 
                                 </Grid>

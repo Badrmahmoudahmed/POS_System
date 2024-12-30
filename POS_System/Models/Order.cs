@@ -1,4 +1,6 @@
-﻿namespace POS_System.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace POS_System.Models
 {
     public class Order : BaseEntity
     {
@@ -7,5 +9,7 @@
         public decimal OrderPrice { get; set; }
         public string PaymentMethod { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
+
+        
     }
 }
